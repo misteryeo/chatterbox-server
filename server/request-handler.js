@@ -12,6 +12,11 @@ this file and include it in basic-server.js so that it actually works.
 
 **************************************************************/
 
+var data = {
+  results: []
+};
+
+
 var requestHandler = function(request, response) {
   // Request and Response come from node's http module.
   //
@@ -31,8 +36,25 @@ var requestHandler = function(request, response) {
   // console.logs in your code.
   console.log('Serving request type ' + request.method + ' for url ' + request.url);
 
+
+
   // The outgoing status.
-  var statusCode = 200;
+  var statusCode = undefined;
+
+  if (request.method === 'GET') {
+    statusCode = 200;
+  } else if (request.method === 'POST') {
+    // console.log('we got a post!');
+    statusCode = 201;
+    request.on('data', function(someData) {
+      // console.log('someData', JSON.parse(someData));
+      // console.log('data.results before push:', data.results);
+      data.results.push(JSON.parse(someData));
+    });
+  }
+
+
+
 
   // See the note below about CORS headers.
   var defaultCorsHeaders = {
@@ -60,7 +82,8 @@ var requestHandler = function(request, response) {
   //
   // Calling .end "flushes" the response's internal buffer, forcing
   // node to actually send all the data over to the client.
-  response.end('Hello, world!');
+
+  response.end(JSON.stringify(data));
 };
 
 // These headers will allow Cross-Origin Resource Sharing (CORS).

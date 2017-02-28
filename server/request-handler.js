@@ -41,7 +41,9 @@ var requestHandler = function(request, response) {
   // The outgoing status.
   var statusCode = undefined;
 
-  if (request.method === 'GET') {
+  if (request.url !== '/classes/messages') {
+    statusCode = 404;
+  } else if (request.method === 'GET') {
     statusCode = 200;
   } else if (request.method === 'POST') {
     // console.log('we got a post!');

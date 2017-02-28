@@ -44,7 +44,8 @@ var app = {
     $.ajax({
       url: app.server,
       type: 'POST',
-      data: JSON.stringify(message),
+      data: message, //JSON.stringify(message),
+      contentType: 'application/json',
       success: function (data) {
         // Clear messages input
         app.$message.val('');
@@ -63,10 +64,11 @@ var app = {
       url: app.server,
       type: 'GET',
       data: { order: '-createdAt' },
-      contentType: 'application/json',
+      // contentType: 'application/json',
       success: function(data) {
 
         console.log('success!');
+
         // Don't bother if we have nothing to work with
         if (!data.results || !data.results.length) { 
           // app.stopSpinner();

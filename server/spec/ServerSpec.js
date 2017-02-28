@@ -77,8 +77,8 @@ describe('Node Server Request Listener Function', function() {
 
   it('Should respond with messages that were previously posted', function() {
     var stubMsg = {
-      username: 'Jono',
-      message: 'Do my bidding!'
+      username: 'Bobby',
+      message: 'stopit!'
     };
     var req = new stubs.request('/classes/messages', 'POST', stubMsg);
     var res = new stubs.response();
@@ -98,6 +98,8 @@ describe('Node Server Request Listener Function', function() {
     expect(messages.length).to.be.above(0);
     expect(messages[0].username).to.equal('Jono');
     expect(messages[0].message).to.equal('Do my bidding!');
+    expect(messages[1].username).to.equal('Bobby');
+    expect(messages[1].message).to.equal('stopit!');
     expect(res._ended).to.equal(true);
   });
 
@@ -115,5 +117,61 @@ describe('Node Server Request Listener Function', function() {
         expect(res._responseCode).to.equal(404);
       });
   });
+
+  it('Should add a "createdAt" timestamp to each message', function() {
+    req = new stubs.request('/classes/messages', 'GET');
+    res = new stubs.response();
+
+    handler.requestHandler(req, res);
+
+    expect(res._responseCode).to.equal(200);
+    var messages = JSON.parse(res._data).results;
+    expect(messages[0].createdAt).to.be.a('string');
+  });
+
+
+
+
+/*
+Existing
+- Response to GET requests
+- Send back parsable data
+- Send back an object
+- Send back object containing results array
+- Accept POST requests
+- Response with previously posted messages
+- 404 for non-existant end point
+
+tests we're thinking of adding
+
+Each test should test one concern only
+1. Test setup
+2. Calling the tested method
+3. Asseting
+
+- Expected behaviour regarding a OPTIONS request?
+
+
+- add 'createdAt' key to messages;
+- only responde with 10 messages 
+- make sure we can handle parameters (such as order)
+
+- make sure we can handle rooms
+
+
+
+
+
+name:matt&room:holla&bhollea:bdefi&
+
+
+
+
+
+
+
+
+
+*/
 
 });

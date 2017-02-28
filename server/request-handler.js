@@ -59,19 +59,20 @@ var requestHandler = function(request, response) {
     // console.log('we got a post!');
     statusCode = 201;
     request.on('data', function(someData) {
-      // console.log('someData', someData.toString('utf8'));
+      console.log('someData', someData.toString('utf8'));
       // console.log('someData', JSON.parse(someData));
       // console.log('data.results before push:', data.results);
       var message = JSON.parse(someData);
       // console.log(message.toString());
+
+      // message.createdAt = new Date();
+
       message.objectId = count;
       count++;
       data.results.push(message);
-      console.log('data.results after push:', data.results);
-
+      // console.log('data.results after push:', data.results);
     });
   }
-
 
   // See the note below about CORS headers.
   var defaultCorsHeaders = {

@@ -12,10 +12,12 @@ this file and include it in basic-server.js so that it actually works.
 
 **************************************************************/
 
+
 var data = {
   results: []
 };
 
+var count = 0;
 
 var requestHandler = function(request, response) {
   // Request and Response come from node's http module.
@@ -37,25 +39,38 @@ var requestHandler = function(request, response) {
   console.log('Serving request type ' + request.method + ' for url ' + request.url);
 
 
-
+  
   // The outgoing status.
   var statusCode = undefined;
 
-  if (request.url !== '/classes/messages') {
+  var urlArr = request.url.split('?');
+  var urlPath = urlArr[0];
+  // var options = urlArr[1];
+
+  if (urlPath !== '/classes/messages') {
     statusCode = 404;
+  } else if (request.method === 'OPTIONS') {
+    console.log('its an Options!');
+    statusCode = 204;
   } else if (request.method === 'GET') {
+    console.log('its a get!');
     statusCode = 200;
   } else if (request.method === 'POST') {
     // console.log('we got a post!');
     statusCode = 201;
     request.on('data', function(someData) {
+      // console.log('someData', someData.toString('utf8'));
       // console.log('someData', JSON.parse(someData));
       // console.log('data.results before push:', data.results);
-      data.results.push(JSON.parse(someData));
+      var message = JSON.parse(someData);
+      // console.log(message.toString());
+      message.objectId = count;
+      count++;
+      data.results.push(message);
+      console.log('data.results after push:', data.results);
+
     });
   }
-
-
 
 
   // See the note below about CORS headers.
@@ -63,15 +78,15 @@ var requestHandler = function(request, response) {
     'access-control-allow-origin': '*',
     'access-control-allow-methods': 'GET, POST, PUT, DELETE, OPTIONS',
     'access-control-allow-headers': 'content-type, accept',
-    'access-control-max-age': 10 // Seconds.
+    'access-control-max-age': 10, // Seconds.
+    'Content-Type': 'application/json'
   };
   var headers = defaultCorsHeaders;
 
   // Tell the client we are sending them plain text.
-  //
   // You will need to change this if you are sending something
   // other than plain text, like JSON or HTML.
-  headers['Content-Type'] = 'text/plain';
+  // headers['Content-Type'] = 'application/json';
 
   // .writeHead() writes to the request line and headers of the response,
   // which includes the status and all headers.

@@ -1,5 +1,3 @@
-
-
 var headers = {
   'access-control-allow-origin': '*',
   'access-control-allow-methods': 'GET, POST, PUT, DELETE, OPTIONS',
@@ -22,22 +20,30 @@ exports.requestHandler = function(req, res) {
   var urlPath = urlArr[0];
   // var options = urlArr[1];
 
-  if (urlPath !== '/classes/messages') {
-    statusCode = 404;
-  } else if (req.method === 'OPTIONS') {
+
+  if (req.method === 'OPTIONS') {
     console.log('its an Options!');
     statusCode = 204;
   } else if (req.method === 'GET') {
     console.log('its a get!');
     statusCode = 200;
   } else if (req.method === 'POST') {
+
     statusCode = 201;
-    req.on('data', function(someData) {
-      var message = JSON.parse(someData);
+
+    var data = '';
+    
+    req.on('data', function(chunk) {
+      data += chunk;
+    });
+
+    req.on('end', function() {
+      var message = JSON.parse(data);
       message.objectId = count++;
       message.createdAt = count.toString();
       messages.push(message);
     });
+
   }
 
   res.writeHead(statusCode, headers);
